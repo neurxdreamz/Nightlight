@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BuisnessLogic/BuisnessLogic.csproj" />
+  <Project Path="Nightlight/Nightlight.csproj" />
+</Solution>
