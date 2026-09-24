@@ -43,5 +43,22 @@ namespace BuisnessLogic
             //Post
             Debug.Assert(CurrentBrightness == TargetBrightness && IsOn == true, "PostViolation: Яркость не установлена");
         }
+        /// <summary>
+        /// Метод для установки таймера
+        /// </summary>
+        public void SetTimer(int DelayMinutes)
+        {
+            //Pre
+            Guard.Requires(IsOn == true, "Ночник должен быть включен");
+            Guard.Requires(DelayMinutes > 0 && DelayMinutes <= 240, "Таймер должен быть от 1 до 240 минут");
+
+            //Method
+            IsTimerActive = true;
+            Timer = DelayMinutes;
+
+            //Post
+            Debug.Assert(Timer == DelayMinutes && IsTimerActive, "PostViolation: Таймер не установлен");
+
+        }
     }
 }
