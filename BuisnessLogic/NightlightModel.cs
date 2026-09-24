@@ -27,5 +27,21 @@ namespace BuisnessLogic
             // Post
             Debug.Assert(IsOn == (IsMotion && AmbientBrightness < 30), "PostViolation: Состояние ночника не соответствует датчикам");
         }
+
+        /// <summary>
+        /// метод для ручной установки яркости
+        /// </summary>
+        public void SetBrightness(int TargetBrightness)
+        {
+            //Pre
+            Guard.Requires(TargetBrightness > 0 && TargetBrightness <= 100, "Яркость должна быть от 1 до 100");
+
+            //method
+            CurrentBrightness = TargetBrightness;
+            IsOn = true;
+
+            //Post
+            Debug.Assert(CurrentBrightness == TargetBrightness && IsOn == true, "PostViolation: Яркость не установлена");
+        }
     }
 }
