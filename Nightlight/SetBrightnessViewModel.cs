@@ -3,47 +3,78 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 
-public partial class SetBrightnessViewModel : ObservableObject
+namespace Nightlight
 {
-    private readonly NightlightModel _nightlight;
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ExecuteCommand))]
-    private int _targetBrightness = 50; // Значение по умолчанию
-
-    [ObservableProperty]
-    private bool _isPreConditionMet;
-
-    [ObservableProperty]
-    private bool? _isPostConditionMet;
-
-    public SetBrightnessViewModel(NightlightModel nightlight)
+    public partial class SetBrightnessViewModel : ObservableObject
     {
-        _nightlight = nightlight;
-        UpdatePreIndicator();
-    }
+        private readonly NightlightModel _nightlight;
 
-    partial void OnTargetBrightnessChanged(int value) => UpdatePreIndicator();
+        public string Title { get; }
 
-    private void UpdatePreIndicator()
-    {
-        // Предусловие: Яркость от 1 до 100
-        IsPreConditionMet = TargetBrightness > 0 && TargetBrightness <= 100;
-    }
+        public event Action<ContractViewModel> ContractRequested;
 
-    private bool CanExecute() => IsPreConditionMet;
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(ExecuteCommand))]
+        private int targetBrightness = 50;
 
-    [RelayCommand(CanExecute = nameof(CanExecute))]
-    private void Execute()
-    {
-        try
+        [ObservableProperty]
+        private bool isPreConditionMet;
+
+        [ObservableProperty]
+        private bool? isPostConditionMet;
+
+        public SetBrightnessViewModel(NightlightModel nightlight)
         {
-            _nightlight.SetBrightness(TargetBrightness);
-            IsPostConditionMet = true;
+            _nightlight = nightlight;
+            Title = "Ручная установка яркости";
+            UpdatePreIndicator();
         }
-        catch (Exception)
+
+        partial void OnTargetBrightnessChanged(int value)
         {
-            IsPostConditionMet = false;
+            UpdatePreIndicator();
+        }
+
+        private void UpdatePreIndicator()
+        {
+            IsPreConditionMet = TargetBrightness > 0 && TargetBrightness <= 100;
+        }
+
+        private bool CanExecute()
+        {
+            return IsPreConditionMet;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanExecute))]
+        private void Execute()
+        {
+            try
+            {
+                _nightlight.SetBrightness(TargetBrightness);
+                IsPostConditionMet = true;
+            }
+            catch (Exception)
+            {
+                IsPostConditionMet = false;
+            }
+        }
+
+        [RelayCommand]
+        private void ShowContract()
+        {
+            ContractViewModel contract = new ContractViewModel();
+
+            contract.Title = "Ручная установка яркости";
+            contract.Pre = "TargetBrightness в диапазоне от 1 до 100.";
+            contract.Post = "CurrentBrightness == TargetBrightness && IsOn == true.";
+            contract.Effects = "Если предусловие нарушено, выбрасывается PreViolationException. Иначе яркость применяется, ночник включается.";
+            contract.ValidExample = "TargetBrightness = 75 -> CurrentBrightness = 75, IsOn = true.";
+            contract.InvalidExample = "TargetBrightness = 0 -> PreViolationException.";
+
+            if (ContractRequested != null)
+            {
+                ContractRequested(contract);
+            }
         }
     }
 }

@@ -2,8 +2,26 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Nightlight"
+             xmlns:views="clr-namespace:Nightlight.Views"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
+        <local:BoolToBrushConverter x:Key="BoolToBrush"/>
+        <local:NullableBoolToBrushConverter x:Key="NullableBoolToBrush"/>
+        <local:BoolToTextConverter x:Key="BoolToText"/>
+        <local:NullableBoolToTextConverter x:Key="NullableBoolToText"/>
+
+        <DataTemplate DataType="{x:Type local:AutoToggleViewModel}">
+            <views:AutoToggleView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type local:SetBrightnessViewModel}">
+            <views:SetBrightnessView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type local:SleepTimerViewModel}">
+            <views:SleepTimerView/>
+        </DataTemplate>
+
     </Application.Resources>
 </Application>

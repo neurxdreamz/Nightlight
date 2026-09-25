@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="Nightlight.Views.AutoToggleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Margin="20">
+
+        <!-- Заголовок -->
+        <TextBlock Text="Автовключение по датчикам"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   Margin="0,0,0,15"/>
+
+        <!-- Поле: Движение -->
+        <CheckBox Content="Движение обнаружено"
+                  IsChecked="{Binding IsMotionDetected}"
+                  Margin="0,0,0,10"/>
+
+        <!-- Поле: Яркость -->
+        <TextBlock Text="Яркость окружения (0-100):"/>
+        <TextBox Text="{Binding AmbientLight, UpdateSourceTrigger=PropertyChanged}"
+                 Width="100"
+                 HorizontalAlignment="Left"
+                 Margin="0,0,0,10"/>
+
+        <!-- Кнопка Выполнить -->
+        <Button Content="Выполнить"
+                Command="{Binding ExecuteCommand}"
+                Width="120"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,15"/>
+
+        <!-- Индикатор Pre -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+            <Ellipse Width="15" Height="15"
+                     Fill="{Binding IsPreConditionMet, Converter={StaticResource BoolToBrush}}"/>
+            <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                <Run Text="Предусловие: "/>
+                <Run Text="{Binding IsPreConditionMet, Converter={StaticResource BoolToText}}"/>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- Индикатор Post -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+            <Ellipse Width="15" Height="15"
+                     Fill="{Binding IsPostConditionMet, Converter={StaticResource NullableBoolToBrush}}"/>
+            <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                <Run Text="Постусловие: "/>
+                <Run Text="{Binding IsPostConditionMet, Converter={StaticResource NullableBoolToText}}"/>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- Кнопка Показать контракт -->
+        <Button Content="Показать контракт"
+                Command="{Binding ShowContractCommand}"
+                Width="180"
+                HorizontalAlignment="Left"/>
+
+    </StackPanel>
+</UserControl>

@@ -2,25 +2,24 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
-public partial class MainViewModel : ObservableObject
+namespace Nightlight
 {
-  
-    public ObservableCollection<object> Operations { get; }
-
-   
-    [ObservableProperty]
-    private object _selectedOperation;
-
-    public MainViewModel(NightlightModel model)
+    public partial class MainViewModel : ObservableObject
     {
-        Operations = new ObservableCollection<object>
-        {
-            new AutoToggleViewModel(model),
-            new SetBrightnessViewModel(model),
-            new SleepTimerViewModel(model)
-        };
+        public ObservableCollection<object> Operations { get; }
 
-       
-        SelectedOperation = Operations[0];
+        [ObservableProperty]
+        private object selectedOperation;
+
+        public MainViewModel(NightlightModel model)
+        {
+            Operations = new ObservableCollection<object>();
+
+            Operations.Add(new AutoToggleViewModel(model));
+            Operations.Add(new SetBrightnessViewModel(model));
+            Operations.Add(new SleepTimerViewModel(model));
+
+            SelectedOperation = Operations[0];
+        }
     }
 }

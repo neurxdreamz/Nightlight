@@ -4,61 +4,90 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Windows;
 
-public partial class SleepTimerViewModel : ObservableObject
+namespace Nightlight
 {
-    private readonly NightlightModel _nightlight;
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ExecuteCommand))]
-    private int _delayMinutes = 30;
-
-    [ObservableProperty]
-    private bool _isPreConditionMet;
-
-    [ObservableProperty]
-    private bool? _isPostConditionMet;
-
-    public SleepTimerViewModel(NightlightModel nightlight)
+    public partial class SleepTimerViewModel : ObservableObject
     {
-        _nightlight = nightlight;
+        private readonly NightlightModel _nightlight;
 
+        public string Title { get; }
 
-        _nightlight.StateChanged += OnNightlightStateChanged;
+        public event Action<ContractViewModel> ContractRequested;
 
-        UpdatePreIndicator();
-    }
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(ExecuteCommand))]
+        private int delayMinutes = 30;
 
-    private void OnNightlightStateChanged()
-    {
-        
-        Application.Current.Dispatcher.Invoke(() =>
+        [ObservableProperty]
+        private bool isPreConditionMet;
+
+        [ObservableProperty]
+        private bool? isPostConditionMet;
+
+        public SleepTimerViewModel(NightlightModel nightlight)
+        {
+            _nightlight = nightlight;
+            Title = "Таймер сна";
+
+            _nightlight.StateChanged += OnNightlightStateChanged;
+
+            UpdatePreIndicator();
+        }
+
+        private void OnNightlightStateChanged()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                UpdatePreIndicator();
+                ExecuteCommand.NotifyCanExecuteChanged();
+            });
+        }
+
+        partial void OnDelayMinutesChanged(int value)
         {
             UpdatePreIndicator();
-            ExecuteCommand.NotifyCanExecuteChanged(); // Принудительно обновляем кнопку
-        });
-    }
-
-    partial void OnDelayMinutesChanged(int value) => UpdatePreIndicator();
-
-    private void UpdatePreIndicator()
-    {
-        
-        IsPreConditionMet = _nightlight.IsOn && (DelayMinutes > 0 && DelayMinutes <= 240);
-    }
-
-    private bool CanExecute() => IsPreConditionMet;
-
-    [RelayCommand(CanExecute = nameof(CanExecute))]
-    private void Execute()
-    {
-        try
-        {
-            _nightlight.SetSleepTimer(DelayMinutes);
-            IsPostConditionMet = true;
         }
-        catch (Exception)
+
+        private void UpdatePreIndicator()
         {
-            IsPostConditionMet = false;
+            IsPreConditionMet = _nightlight.IsOn && (DelayMinutes > 0 && DelayMinutes <= 240);
+        }
+
+        private bool CanExecute()
+        {
+            return IsPreConditionMet;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanExecute))]
+        private void Execute()
+        {
+            try
+            {
+                _nightlight.SetSleepTimer(DelayMinutes);
+                IsPostConditionMet = true;
+            }
+            catch (Exception)
+            {
+                IsPostConditionMet = false;
+            }
+        }
+
+        [RelayCommand]
+        private void ShowContract()
+        {
+            ContractViewModel contract = new ContractViewModel();
+
+            contract.Title = "Таймер сна";
+            contract.Pre = "IsOn == true и DelayMinutes в диапазоне от 1 до 240.";
+            contract.Post = "TimerRemaining == DelayMinutes && IsTimerActive == true.";
+            contract.Effects = "Если предусловие нарушено, выбрасывается PreViolationException. Иначе таймер запускается и уменьшает TimerRemaining каждую минуту.";
+            contract.ValidExample = "IsOn = true, DelayMinutes = 30 -> таймер на 30 минут.";
+            contract.InvalidExample = "IsOn = false, DelayMinutes = 30 -> PreViolationException.";
+
+            if (ContractRequested != null)
+            {
+                ContractRequested(contract);
+            }
         }
     }
 }

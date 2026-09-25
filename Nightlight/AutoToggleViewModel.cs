@@ -2,65 +2,88 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Windows.Media.Media3D;
 using static BuisnessLogic.Guard;
 
-public partial class AutoToggleViewModel : ObservableObject
+namespace Nightlight
 {
-    private readonly NightlightModel _nightlight;
-
-    
-    [ObservableProperty]
-    private bool isMotionDetected;
-
-   
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ExecuteCommand))]
-    private int ambientLight;
-
- 
-    [ObservableProperty]
-    private bool isPreConditionMet;
-
-    [ObservableProperty]
-    private bool? isPostConditionMet; 
-
-    public AutoToggleViewModel(NightlightModel nightlight)
+    public partial class AutoToggleViewModel : ObservableObject
     {
-        _nightlight = nightlight;
-        UpdatePreIndicator();
-    }
+        private readonly NightlightModel _nightlight;
 
- 
-    partial void OnAmbientLightChanged(int value) => UpdatePreIndicator();
+        public string Title { get; }
 
-    private void UpdatePreIndicator()
-    {
-       
-        IsPreConditionMet = AmbientLight >= 0 && AmbientLight <= 100;
-    }
+        public event Action<ContractViewModel> ContractRequested;
 
-   
-    private bool CanExecute() => IsPreConditionMet;
+        [ObservableProperty]
+        private bool isMotionDetected;
 
-   
-    [RelayCommand(CanExecute = nameof(CanExecute))]
-    private void Execute()
-    {
-        try
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(ExecuteCommand))]
+        private int ambientLight;
+
+        [ObservableProperty]
+        private bool isPreConditionMet;
+
+        [ObservableProperty]
+        private bool? isPostConditionMet;
+
+        public AutoToggleViewModel(NightlightModel nightlight)
         {
-            _nightlight.AutoToggle(IsMotionDetected, AmbientLight);
-
-            
-            IsPostConditionMet = true;
+            _nightlight = nightlight;
+            Title = "Автовключение по датчикам";
+            UpdatePreIndicator();
         }
-        catch (PreViolationException)
+
+        partial void OnAmbientLightChanged(int value)
         {
-            IsPostConditionMet = false;
+            UpdatePreIndicator();
         }
-        catch (Exception)
+
+        private void UpdatePreIndicator()
         {
-          
-            IsPostConditionMet = false;
+            IsPreConditionMet = AmbientLight >= 0 && AmbientLight <= 100;
+        }
+
+        private bool CanExecute()
+        {
+            return IsPreConditionMet;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanExecute))]
+        private void Execute()
+        {
+            try
+            {
+                _nightlight.AutoToggle(IsMotionDetected, AmbientLight);
+                IsPostConditionMet = true;
+            }
+            catch (PreViolationException)
+            {
+                IsPostConditionMet = false;
+            }
+            catch (Exception)
+            {
+                IsPostConditionMet = false;
+            }
+        }
+
+        [RelayCommand]
+        private void ShowContract()
+        {
+            ContractViewModel contract = new ContractViewModel();
+
+            contract.Title = "Автовключение ночника";
+            contract.Pre = "Яркость окружения AmbientBrightness в диапазоне от 0 до 100.";
+            contract.Post = "IsOn == (IsMotion && AmbientBrightness < 30).";
+            contract.Effects = "Если предусловие нарушено, выбрасывается PreViolationException. Иначе ночник включается или выключается по датчикам.";
+            contract.ValidExample = "AmbientBrightness = 20, IsMotion = true -> IsOn = true.";
+            contract.InvalidExample = "AmbientBrightness = 150 -> PreViolationException.";
+
+            if (ContractRequested != null)
+            {
+                ContractRequested(contract);
+            }
         }
     }
 }
