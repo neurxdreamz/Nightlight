@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="BuisnessLogic/BuisnessLogic.csproj" />
   <Project Path="Nightlight/Nightlight.csproj" />
+  <Project Path="TestProject2/Nightlight.Tests.csproj" Id="13a69197-2346-45ce-9f5e-85547874e379" />
 </Solution>
