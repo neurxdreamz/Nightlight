@@ -3,16 +3,26 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Timers;
+using Timer = System.Timers.Timer;
+
 
 namespace BuisnessLogic
 {
     public class NightlightModel
     {
+        public event Action StateChanged;
+
         public bool IsOn { get; private set; }
         public bool IsTimerActive { get; private set; }
         public int CurrentBrightness { get; private set; }
-        public int Timer { get; private set; }
+        public int TimerRemaining { get; private set; }
 
+        private readonly Timer sleepTimer;
+
+        public NightlightModel()
+        {
+            sleepTimer = new Timer(60000);
+        }
 
         /// <summary>
         /// Метод отвечающий за автоматическое включение ночника
@@ -28,6 +38,8 @@ namespace BuisnessLogic
             // Post
             Debug.Assert(IsOn == (IsMotion && AmbientBrightness < 30), "PostViolation: Состояние ночника не соответствует датчикам");
         }
+
+        
 
         /// <summary>
         /// метод для ручной установки яркости
@@ -47,19 +59,43 @@ namespace BuisnessLogic
         /// <summary>
         /// Метод для установки таймера
         /// </summary>
-        public void SetTimer(int DelayMinutes)
+        public void SetSleepTimer(int DelayMinutes)
         {
             //Pre
-            Guard.Requires(IsOn == true, "Ночник должен быть включен");
+            Guard.Requires(IsOn, "Ночник должен быть включен для установки таймера");
             Guard.Requires(DelayMinutes > 0 && DelayMinutes <= 240, "Таймер должен быть от 1 до 240 минут");
 
-            //Method
+            //Логика
+            TimerRemaining = DelayMinutes;
             IsTimerActive = true;
-            Timer = DelayMinutes;
+            sleepTimer.Start(); 
 
             //Post
-            Debug.Assert(Timer == DelayMinutes && IsTimerActive, "PostViolation: Таймер не установлен");
+            Debug.Assert(TimerRemaining == DelayMinutes && IsTimerActive, "PostViolation: Таймер не установлен");
 
+            // Уведомляем UI об изменениях
+            StateChanged?.Invoke();
+
+        }
+
+      
+        private void OnTimerTick(object? sender, ElapsedEventArgs e)
+        {
+            if (TimerRemaining > 0)
+            {
+                TimerRemaining--; 
+            }
+
+           
+            if (TimerRemaining <= 0)
+            {
+                IsOn = false;
+                IsTimerActive = false;
+                sleepTimer.Stop();
+            }
+
+           
+            StateChanged?.Invoke();
         }
     }
 }
