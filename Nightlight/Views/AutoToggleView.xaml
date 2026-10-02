@@ -1,15 +1,7 @@
 ﻿<UserControl x:Class="Nightlight.Views.AutoToggleView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel RenderTransformOrigin="0.5,0.5" Height="316">
-        <StackPanel.RenderTransform>
-            <TransformGroup>
-                <ScaleTransform/>
-                <SkewTransform AngleX="-0.346"/>
-                <RotateTransform/>
-                <TranslateTransform X="-0.931"/>
-            </TransformGroup>
-        </StackPanel.RenderTransform>
+    <StackPanel Margin="10">
 
         <TextBlock Text="Автовключение по датчикам"
                    Foreground="White"
