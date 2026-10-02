@@ -10,6 +10,7 @@
         <local:NullableBoolToBrushConverter x:Key="NullableBoolToBrush"/>
         <local:BoolToTextConverter x:Key="BoolToText"/>
         <local:NullableBoolToTextConverter x:Key="NullableBoolToText"/>
+        <local:IsOnToGlowBrushConverter x:Key="IsOnToGlow"/>
 
         <DataTemplate DataType="{x:Type local:AutoToggleViewModel}">
             <views:AutoToggleView/>
