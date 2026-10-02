@@ -85,15 +85,6 @@
                             <GradientStop Color="#00FFC94A" Offset="1"/>
                         </RadialGradientBrush>
                     </Ellipse.Fill>
-                    <Ellipse.Style>
-                        <Style TargetType="Ellipse">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsNightlightOn}" Value="False">
-                                    <Setter Property="Opacity" Value="0"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Ellipse.Style>
                 </Ellipse>
 
                 <!-- Ядро лампы -->

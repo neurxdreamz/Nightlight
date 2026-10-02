@@ -39,7 +39,16 @@ namespace Nightlight
         private void OnModelStateChanged()
         {
             IsNightlightOn = _model.IsOn;
-            CurrentBrightness = _model.CurrentBrightness;         
+
+            if (_model.IsOn == true)
+            {
+                CurrentBrightness = _model.CurrentBrightness;
+            }
+            else
+            {
+                CurrentBrightness = 0;
+            }
+
         }
     }
 }

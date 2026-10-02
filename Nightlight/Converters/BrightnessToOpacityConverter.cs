@@ -20,8 +20,7 @@ namespace Nightlight
                 brightness = 100;
             }
 
-            //0 -> 0.15(едва светит),100 -> 1.0(ярко светит)
-            double opacity = 0.15 + (brightness * 0.0085);
+            double opacity = brightness * 0.01;
 
             return opacity;
         }
