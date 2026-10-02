@@ -11,9 +11,10 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
+        <!-- ЛЕВАЯ ПАНЕЛЬ -->
         <Border Grid.Column="0" Background="#1E293B">
             <StackPanel>
-                <TextBlock Text="  НОЧНИК"
+                <TextBlock Text="🌙  НОЧНИК"
                            Foreground="White"
                            FontSize="20"
                            FontWeight="Bold"
@@ -62,17 +63,21 @@
             </StackPanel>
         </Border>
 
+        <!-- ПРАВАЯ ЧАСТЬ -->
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="220"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <!-- ВИЗУАЛЬНАЯ ЛАМПА -->
             <Grid Grid.Row="0" Background="#0B1220">
 
+                <!-- Свечение -->
                 <Ellipse Width="180" Height="180"
                          HorizontalAlignment="Center"
-                         VerticalAlignment="Center">
+                         VerticalAlignment="Center"
+                         Opacity="{Binding CurrentBrightness, Converter={StaticResource BrightnessToOpacity}}">
                     <Ellipse.Fill>
                         <RadialGradientBrush>
                             <GradientStop Color="#FFFFC94A" Offset="0"/>
@@ -86,19 +91,18 @@
                                 <DataTrigger Binding="{Binding IsNightlightOn}" Value="False">
                                     <Setter Property="Opacity" Value="0"/>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding IsNightlightOn}" Value="True">
-                                    <Setter Property="Opacity" Value="1"/>
-                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Ellipse.Style>
                 </Ellipse>
 
+                <!-- Ядро лампы -->
                 <Ellipse Width="60" Height="60"
                          HorizontalAlignment="Center"
                          VerticalAlignment="Center"
                          Fill="{Binding IsNightlightOn, Converter={StaticResource IsOnToGlow}}"/>
 
+                <!-- Статус -->
                 <TextBlock HorizontalAlignment="Center"
                            VerticalAlignment="Bottom"
                            FontSize="13"

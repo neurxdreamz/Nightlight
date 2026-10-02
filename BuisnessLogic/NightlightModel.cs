@@ -37,6 +37,7 @@ namespace BuisnessLogic
 
             // Post
             Debug.Assert(IsOn == (IsMotion && AmbientBrightness < 30), "PostViolation: Состояние ночника не соответствует датчикам");
+            StateChanged?.Invoke();
         }
 
         
@@ -55,6 +56,7 @@ namespace BuisnessLogic
 
             //Post
             Debug.Assert(CurrentBrightness == TargetBrightness && IsOn == true, "PostViolation: Яркость не установлена");
+            StateChanged?.Invoke();
         }
         /// <summary>
         /// Метод для установки таймера

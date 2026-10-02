@@ -11,6 +11,7 @@
         <local:BoolToTextConverter x:Key="BoolToText"/>
         <local:NullableBoolToTextConverter x:Key="NullableBoolToText"/>
         <local:IsOnToGlowBrushConverter x:Key="IsOnToGlow"/>
+        <local:BrightnessToOpacityConverter x:Key="BrightnessToOpacity"/>
 
         <DataTemplate DataType="{x:Type local:AutoToggleViewModel}">
             <views:AutoToggleView/>

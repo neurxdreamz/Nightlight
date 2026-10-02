@@ -6,7 +6,7 @@ namespace Nightlight
 {
     public partial class MainViewModel : ObservableObject
     {
-        private readonly NightlightModel _model;   
+        private readonly NightlightModel _model;
 
         public ObservableCollection<object> Operations { get; }
 
@@ -14,11 +14,14 @@ namespace Nightlight
         private object selectedOperation;
 
         [ObservableProperty]
-        private bool isNightlightOn;               
+        private bool isNightlightOn;
+
+        [ObservableProperty]
+        private int currentBrightness;               
 
         public MainViewModel(NightlightModel model)
         {
-            _model = model;                         
+            _model = model;
 
             Operations = new ObservableCollection<object>();
 
@@ -28,13 +31,15 @@ namespace Nightlight
 
             SelectedOperation = Operations[0];
 
-            IsNightlightOn = _model.IsOn;                       
-            _model.StateChanged += OnModelStateChanged;         
+            IsNightlightOn = _model.IsOn;
+            CurrentBrightness = _model.CurrentBrightness;        
+            _model.StateChanged += OnModelStateChanged;
         }
 
-        private void OnModelStateChanged()                      
+        private void OnModelStateChanged()
         {
             IsNightlightOn = _model.IsOn;
+            CurrentBrightness = _model.CurrentBrightness;         
         }
     }
 }
