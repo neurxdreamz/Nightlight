@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Nightlight.ViewModels;
+using System.Windows;
 
 namespace Nightlight.Views
 {

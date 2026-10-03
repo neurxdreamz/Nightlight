@@ -1,4 +1,4 @@
-﻿namespace Nightlight
+﻿namespace Nightlight.ViewModels
 {
     public class ContractViewModel
     {

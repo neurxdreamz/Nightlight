@@ -1,6 +1,7 @@
 ﻿using BuisnessLogic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Nightlight.ViewModels;
 using System;
 
 namespace Nightlight
