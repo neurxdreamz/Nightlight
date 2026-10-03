@@ -21,7 +21,7 @@ namespace Nightlight
         //целевая яркость, по умолчанию 50
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(ExecuteCommand))]
-        private int targetBrightness = 50;
+        private string _targetBrightnessText = "";
 
         //выполнено ли предусловие
         [ObservableProperty]
@@ -44,7 +44,7 @@ namespace Nightlight
         }
 
         //вызывается при изменении яркости
-        partial void OnTargetBrightnessChanged(int value)
+        partial void OnTargetBrightnessTextChanged(string value)
         {
             UpdatePreIndicator();
         }
@@ -52,7 +52,11 @@ namespace Nightlight
         //проверка предусловия
         private void UpdatePreIndicator()
         {
-            IsPreConditionMet = TargetBrightness > 0 && TargetBrightness <= 100;
+            // Пытаемся перевести текст в число
+            bool isNumber = int.TryParse(TargetBrightnessText, out int brightness);
+
+            // Предусловие: это должно быть число И оно должно быть от 1 до 100
+            IsPreConditionMet = isNumber && brightness >= 1 && brightness <= 100;
         }
 
         //можно ли выполнить команду
@@ -61,21 +65,20 @@ namespace Nightlight
             return IsPreConditionMet;
         }
 
-        //основная команда кнопки Выполнить
         [RelayCommand(CanExecute = nameof(CanExecute))]
         private void Execute()
         {
             try
             {
-                //вызываем метод модели
-                _nightlight.SetBrightness(TargetBrightness);
+                // Кнопка нажмется только если предусловие выполнено, 
+                // поэтому мы на 100% уверены, что внутри нормальное число
+                int parsedBrightness = int.Parse(TargetBrightnessText);
 
-                //если не было исключения, постусловие выполнено
+                _nightlight.SetBrightness(parsedBrightness);
                 IsPostConditionMet = true;
             }
             catch (Exception)
             {
-                //при ошибке постусловие не выполнено
                 IsPostConditionMet = false;
             }
         }

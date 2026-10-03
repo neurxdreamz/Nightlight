@@ -27,7 +27,7 @@ namespace Nightlight
         //яркость окружения
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(ExecuteCommand))]
-        private int ambientLight;
+        private string ambientLightText = "";
 
         //выполнено ли предусловие
         [ObservableProperty]
@@ -49,7 +49,7 @@ namespace Nightlight
         }
 
         //вызывается при изменении яркости окружения
-        partial void OnAmbientLightChanged(int value)
+        partial void OnAmbientLightTextChanged(string value)
         {
             UpdatePreIndicator();
         }
@@ -57,8 +57,8 @@ namespace Nightlight
         //проверка предусловия
         private void UpdatePreIndicator()
         {
-            //яркость должна быть от 0 до 100
-            IsPreConditionMet = AmbientLight >= 0 && AmbientLight <= 100;
+            bool isNumber = int.TryParse(AmbientLightText, out int light);
+            IsPreConditionMet = isNumber && light >= 0 && light <= 100;
         }
 
         //можно ли выполнить команду
@@ -73,20 +73,18 @@ namespace Nightlight
         {
             try
             {
-                //вызываем метод модели с датчиками
-                _nightlight.AutoToggle(IsMotionDetected, AmbientLight);
+                // Парсим строку в число, так как кнопка активна только если введено валидное число
+                int parsedLight = int.Parse(AmbientLightText);
 
-                //если не было исключения, постусловие выполнено
+                _nightlight.AutoToggle(IsMotionDetected, parsedLight);
                 IsPostConditionMet = true;
             }
             catch (PreViolationException)
             {
-                //нарушено предусловие - постусловие не выполнено
                 IsPostConditionMet = false;
             }
             catch (Exception)
             {
-                //прочие ошибки - постусловие не выполнено
                 IsPostConditionMet = false;
             }
         }

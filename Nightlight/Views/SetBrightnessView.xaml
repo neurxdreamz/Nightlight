@@ -14,12 +14,12 @@
                    FontSize="13"
                    Margin="0,0,0,5"/>
 
-        <TextBox Text="{Binding TargetBrightness, UpdateSourceTrigger=PropertyChanged}"
-                 Width="120"
-                 HorizontalAlignment="Left"
-                 FontSize="14"
-                 Padding="6"
-                 Margin="0,0,0,20"/>
+        <TextBox Text="{Binding TargetBrightnessText, UpdateSourceTrigger=PropertyChanged}"
+         Width="120"
+         HorizontalAlignment="Left"
+         FontSize="14"
+         Padding="6"
+         Margin="0,0,0,20"/>
 
         <Button Content="Выполнить"
                 Command="{Binding ExecuteCommand}"
