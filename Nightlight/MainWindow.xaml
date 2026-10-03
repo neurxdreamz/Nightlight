@@ -104,7 +104,7 @@
                             <Setter Property="Text" Value="Ночник выключен"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsNightlightOn}" Value="True">
-                                    <Setter Property="Text" Value="Тёплый свет · 2700K"/>
+                                    <Setter Property="Text" Value="Тёплый свет"/>
                                     <Setter Property="Foreground" Value="#FFC94A"/>
                                 </DataTrigger>
                             </Style.Triggers>
