@@ -22,6 +22,7 @@ namespace BuisnessLogic
         public NightlightModel()
         {
             sleepTimer = new Timer(60000);
+            sleepTimer.Elapsed += OnTimerTick;
         }
 
         /// <summary>
