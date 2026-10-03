@@ -17,7 +17,7 @@ namespace Nightlight
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(ExecuteCommand))]
-        private int delayMinutes = 30;
+        private string _delayMinutesText = "30";
 
         [ObservableProperty]
         private bool isPreConditionMet;
@@ -44,14 +44,15 @@ namespace Nightlight
             });
         }
 
-        partial void OnDelayMinutesChanged(int value)
+        partial void OnDelayMinutesTextChanged(string value)
         {
             UpdatePreIndicator();
         }
 
         private void UpdatePreIndicator()
         {
-            IsPreConditionMet = _nightlight.IsOn && (DelayMinutes > 0 && DelayMinutes <= 240);
+            bool isNumber = int.TryParse(DelayMinutesText, out int minutes);
+            IsPreConditionMet = _nightlight.IsOn && (isNumber && minutes > 0 && minutes <= 240);
         }
 
         private bool CanExecute()
@@ -64,7 +65,8 @@ namespace Nightlight
         {
             try
             {
-                _nightlight.SetSleepTimer(DelayMinutes);
+                int parsedMinutes = int.Parse(DelayMinutesText);
+                _nightlight.SetSleepTimer(parsedMinutes);
                 IsPostConditionMet = true;
             }
             catch (Exception)
