@@ -22,15 +22,44 @@
          Margin="0,0,0,20"/>
 
         <Button Content="Выполнить"
-                Command="{Binding ExecuteCommand}"
-                Width="140"
-                Height="36"
-                HorizontalAlignment="Left"
-                FontSize="14"
-                Background="#4F46E5"
-                Foreground="White"
-                BorderThickness="0"
-                Margin="0,0,0,20"/>
+        Command="{Binding ExecuteCommand}"
+        Width="140"
+        Height="36"
+        HorizontalAlignment="Left"
+        FontSize="14"
+        BorderThickness="0"
+        Margin="0,0,0,20">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="#4F46E5"/>
+                    <Setter Property="Foreground" Value="White"/>
+
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                                    <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"/>
+                                </Border>
+
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#4338CA"/>
+                                    </Trigger>
+
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Background" Value="#334155"/>
+                                        <Setter Property="Foreground" Value="#64748B"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Style>
+        </Button>
 
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <Ellipse Width="14" Height="14"
