@@ -66,18 +66,28 @@
         <!-- ПРАВАЯ ЧАСТЬ -->
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="220"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <!-- ВИЗУАЛЬНАЯ ЛАМПА -->
-            <Grid Grid.Row="0" Background="#0B1220">
+            <Grid Grid.Row="0" Background="#0B1220" Height="220">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedOperation.Title}" Value="Конструктор фрагмента (wp)">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
 
                 <!-- Свечение -->
                 <Ellipse Width="180" Height="180"
-                         HorizontalAlignment="Center"
-                         VerticalAlignment="Center"
-                         Opacity="{Binding CurrentBrightness, Converter={StaticResource BrightnessToOpacity}}">
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center"
+             Opacity="{Binding CurrentBrightness, Converter={StaticResource BrightnessToOpacity}}">
                     <Ellipse.Fill>
                         <RadialGradientBrush>
                             <GradientStop Color="#FFFFC94A" Offset="0"/>
@@ -89,15 +99,15 @@
 
                 <!-- Ядро лампы -->
                 <Ellipse Width="60" Height="60"
-                         HorizontalAlignment="Center"
-                         VerticalAlignment="Center"
-                         Fill="{Binding IsNightlightOn, Converter={StaticResource IsOnToGlow}}"/>
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center"
+             Fill="{Binding IsNightlightOn, Converter={StaticResource IsOnToGlow}}"/>
 
                 <!-- Статус -->
                 <TextBlock HorizontalAlignment="Center"
-                           VerticalAlignment="Bottom"
-                           FontSize="13"
-                           Margin="0,0,0,15">
+               VerticalAlignment="Bottom"
+               FontSize="13"
+               Margin="0,0,0,15">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="Foreground" Value="#94A3B8"/>

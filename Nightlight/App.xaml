@@ -13,12 +13,19 @@
         <local:IsOnToGlowBrushConverter x:Key="IsOnToGlow"/>
         <local:BrightnessToOpacityConverter x:Key="BrightnessToOpacity"/>
 
+        <local:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibility"/>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+
         <DataTemplate DataType="{x:Type local:AutoToggleViewModel}">
             <views:AutoToggleView/>
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type local:SetBrightnessViewModel}">
             <views:SetBrightnessView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type local:FragmentConstructorViewModel}">
+            <views:FragmentConstructorView/>
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type local:SleepTimerViewModel}">
