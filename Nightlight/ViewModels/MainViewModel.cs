@@ -25,7 +25,7 @@ namespace Nightlight
         {
             _model = model;
 
-            FragmentConstructor = new FragmentConstructorViewModel();
+            FragmentConstructor = new FragmentConstructorViewModel(model);
 
             Operations = new ObservableCollection<object>();
 

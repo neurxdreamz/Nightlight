@@ -9,19 +9,19 @@ namespace Nightlight.Views
         public FragmentConstructorView()
         {
             InitializeComponent();
-            DataContextChanged += FragmentConstructorView_DataContextChanged;
+            
         }
 
-        private void FragmentConstructorView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            var oldVm = e.OldValue as FragmentConstructorViewModel;
-            if (oldVm != null)
-                oldVm.ContractRequested -= ShowContractWindow;
+        //private void FragmentConstructorView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        //{
+        //    var oldVm = e.OldValue as FragmentConstructorViewModel;
+        //    if (oldVm != null)
+        //        oldVm.ContractRequested -= ShowContractWindow;
 
-            var newVm = e.NewValue as FragmentConstructorViewModel;
-            if (newVm != null)
-                newVm.ContractRequested += ShowContractWindow;
-        }
+        //    var newVm = e.NewValue as FragmentConstructorViewModel;
+        //    if (newVm != null)
+        //        newVm.ContractRequested += ShowContractWindow;
+        //}
 
         private void ShowContractWindow(ContractViewModel contract)
         {
