@@ -32,7 +32,7 @@ namespace Nightlight
 
         // Входной параметр (например, начальная яркость или показание датчика для запуска скрипта)
         [ObservableProperty]
-        private int _inputParameter = 60;
+        private int _inputParameter = 30;
 
         public ObservableCollection<WpStep> TraceSteps { get; } = new();
 
@@ -160,26 +160,42 @@ namespace Nightlight
         [RelayCommand]
         private void ExecuteScriptOnNightlight()
         {
-            // Берем текущую яркость ночника (или 50, если он сейчас выключен) как базу для переменных
-            double baseVal = _model.CurrentBrightness > 0 ? _model.CurrentBrightness : InputParameter;
+            // Определяем входные данные в зависимости от выбранного пресета, 
+            // чтобы они сразу удовлетворяли условиям демонстрации:
+            Dictionary<string, double> vars;
 
-            var vars = new Dictionary<string, double>
+            if (CodeText.Contains("x1")) // Для пресета «Макс из двух»
             {
-                ["brightness"] = baseVal,
-                ["x"] = baseVal,
-                ["y"] = 0,
-                ["x1"] = baseVal,
-                ["x2"] = 40,
-                ["max"] = 0,
-                ["lux"] = 10,     // для пресета датчика освещенности
-                ["D"] = 16,       // для пресета квадратного уравнения
-                ["a"] = 1,
-                ["b"] = -120,
-                ["sqrtD"] = 4,
-                ["k"] = 2
-            };
+                vars = new Dictionary<string, double>
+                {
+                    ["x1"] = 75, // Задаем число больше 60, чтобы цель (max > 60) честно выполнилась!
+                    ["x2"] = 40,
+                    ["max"] = 0
+                };
+            }
+            else if (CodeText.Contains("lux")) // Для авто-яркости по датчику
+            {
+                vars = new Dictionary<string, double>
+                {
+                    ["lux"] = 10, // Темно (меньше 20), значит включит высокую яркость
+                    ["brightness"] = 0
+                };
+            }
+            else // Для последовательности / ступенчатого розжига
+            {
+                double baseVal = _model.CurrentBrightness >= 90 ? 20 : (_model.CurrentBrightness > 0 ? _model.CurrentBrightness : 30);
+                vars = new Dictionary<string, double>
+                {
+                    ["brightness"] = baseVal,
+                    ["x"] = baseVal,
+                    ["y"] = 0
+                };
+            }
 
+            // Выполняем скрипт
             int newBrightness = _wpEngine.ExecuteScenario(CodeText, vars);
+
+            // Применяем результат к ночнику
             _model.ApplyScenarioBrightness(newBrightness);
 
             NightlightActionStatus = $"Сценарий выполнен: яркость ночника установлена на {_model.CurrentBrightness}% (Ночник {(_model.IsOn ? "ВКЛ" : "ВЫКЛ")})";
