@@ -100,5 +100,20 @@ namespace BuisnessLogic
            
             StateChanged?.Invoke();
         }
+
+        /// <summary>
+        /// Метод позволяющий конструктору wp менять параметры самого ночника
+        /// </summary>
+        public void ApplyScenarioBrightness(int calculatedBrightness)
+        {
+            // Ограничиваем значение в допустимых пределах яркости ночника (0..100)
+            int safeBrightness = Math.Clamp(calculatedBrightness, 0, 100);
+
+            CurrentBrightness = safeBrightness;
+            IsOn = safeBrightness > 0;
+
+            // Уведомляем MainViewModel, чтобы лампа на экране обновилась
+            StateChanged?.Invoke();
+        }
     }
 }

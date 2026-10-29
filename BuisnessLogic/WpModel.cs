@@ -41,4 +41,7 @@ namespace BuisnessLogic
         public string PostShort { get; set; } = string.Empty;
         public string PostHuman { get; set; } = string.Empty;
     }
+
 }
+    
+
