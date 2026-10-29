@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static BuisnessLogic.WpStatements;
@@ -425,6 +427,100 @@ namespace BuisnessLogic
         private string FormatBranch(List<Statement> branch)
         {
             return string.Join("; ", branch.Select(s => s.RawText));
+        }
+
+        #endregion
+
+        #region Выполнение сценария над ночником (интерпретатор сверху вниз)
+
+        /// <summary>
+        /// Выполняет скрипт сверху вниз на заданных входных параметрах и возвращает итоговую яркость ночника (0..100)
+        /// </summary>
+        public int ExecuteScenario(string code, Dictionary<string, double> variables)
+        {
+            List<Statement> statements = ParseStatements(code);
+            ExecuteStatementList(statements, variables);
+
+            // Ищем переменную, отвечающую за итоговую яркость ночника (по приоритету имени)
+            string[] targetNames = { "brightness", "max", "y", "x" };
+            foreach (string name in targetNames)
+            {
+                if (variables.TryGetValue(name, out double val))
+                {
+                    // Если в пресете вернулся код ошибки (например, -999), выключаем ночник (0)
+                    if (val < 0) return 0;
+                    return (int)Math.Round(val);
+                }
+            }
+
+            return 0;
+        }
+
+        private void ExecuteStatementList(List<Statement> statements, Dictionary<string, double> vars)
+        {
+            // В отличие от wp, выполнение кода идет строго СВЕРХУ ВНИЗ (от 0 до Count - 1)
+            for (int i = 0; i < statements.Count; i++)
+            {
+                if (statements[i] is AssignmentStatement assign)
+                {
+                    double value = EvaluateMathExpression(assign.Expression, vars);
+                    vars[assign.Variable] = value;
+                }
+                else if (statements[i] is IfStatement ifStmt)
+                {
+                    bool conditionMet = EvaluateBooleanCondition(ifStmt.Condition, vars);
+                    if (conditionMet)
+                        ExecuteStatementList(ifStmt.ThenBranch, vars);
+                    else
+                        ExecuteStatementList(ifStmt.ElseBranch, vars);
+                }
+            }
+        }
+
+        private double EvaluateMathExpression(string expr, Dictionary<string, double> vars)
+        {
+            string prepared = SubstituteVariables(expr, vars);
+
+            // Поддержка функции abs(...)
+            prepared = Regex.Replace(prepared, @"abs\s*\(([^)]+)\)", m =>
+            {
+                double inner = Convert.ToDouble(new DataTable().Compute(m.Groups[1].Value, ""));
+                return Math.Abs(inner).ToString(CultureInfo.InvariantCulture);
+            }, RegexOptions.IgnoreCase);
+
+            object result = new DataTable().Compute(prepared, "");
+            double doubleResult = Convert.ToDouble(result, CultureInfo.InvariantCulture);
+
+            if (double.IsInfinity(doubleResult) || double.IsNaN(doubleResult))
+                throw new DivideByZeroException("Сценарий привел к делению на ноль (нарушено ОДЗ wp)!");
+
+            return doubleResult;
+        }
+
+        private bool EvaluateBooleanCondition(string condition, Dictionary<string, double> vars)
+        {
+            string prepared = SubstituteVariables(condition, vars)
+                .Replace("==", "=")
+                .Replace("!=", "<>")
+                .Replace("&&", " AND ")
+                .Replace("∧", " AND ")
+                .Replace("||", " OR ")
+                .Replace("∨", " OR ");
+
+            object result = new DataTable().Compute(prepared, "");
+            return Convert.ToBoolean(result);
+        }
+
+        private string SubstituteVariables(string text, Dictionary<string, double> vars)
+        {
+            string result = text;
+            foreach (var kvp in vars)
+            {
+                string pattern = $@"\b{Regex.Escape(kvp.Key)}\b";
+                string numStr = kvp.Value.ToString(CultureInfo.InvariantCulture);
+                result = Regex.Replace(result, pattern, $"({numStr})");
+            }
+            return result;
         }
 
         #endregion
