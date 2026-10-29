@@ -20,6 +20,19 @@ namespace BuisnessLogic
 
             var result = new WpCalculationResult();
 
+            // 1. Защита от незаконченных инструкций (обрывов на знаках присваивания или операторах)
+            var rawLines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var rawLine in rawLines)
+            {
+                var trimmed = rawLine.Trim().TrimEnd(';');
+                if (trimmed.EndsWith(":=") || trimmed.EndsWith("=") || trimmed.EndsWith("+") || trimmed.EndsWith("-"))
+                {
+                    result.IsSuccess = false;
+                    result.ErrorMessage = "Ошибка синтаксиса: обнаружена незавершенная инструкция.";
+                    return result;
+                }
+            }
+
             try
             {
                 List<Statement> statements = ParseStatements(code);
@@ -365,9 +378,15 @@ namespace BuisnessLogic
 
         private AssignmentStatement ParseAssignment(string text)
         {
+            // Проверяем, есть ли вообще :=
+            if (!text.Contains(":="))
+            {
+                throw new FormatException($"Синтаксическая ошибка: в операторе '{text}' отсутствует знак присваивания ':='. Используйте формат 'x := выражение'.");
+            }
+
             var parts = text.Split(new[] { ":=" }, StringSplitOptions.None);
             if (parts.Length != 2)
-                throw new FormatException($"Некорректный оператор присваивания: '{text}'. Используйте формат 'x := выражение'.");
+                throw new FormatException($"Некорректный оператор присваивания: '{text}'. Проверьте, что знак ':=' стоит один раз.");
 
             return new AssignmentStatement(parts[0], parts[1]);
         }

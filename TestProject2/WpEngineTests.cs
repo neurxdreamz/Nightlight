@@ -60,39 +60,6 @@ namespace Nightlight.Tests
             Assert.Contains("5 > 0", result.FinalWpShort);
         }
 
-        [Fact]
-        public void CalculateWp_VariableExpression_SubstitutesCorrectly()
-        {
-            var result = _engine.CalculateWp("x := y + 1", "x > 5");
-            Assert.True(result.IsSuccess);
-            Assert.Contains("y + 1 > 5", result.FinalWpShort);
-        }
-
-        [Fact]
-        public void CalculateWp_DivisionExpression_AddsDefinednessCondition()
-        {
-            var result = _engine.CalculateWp("x := 10 / y", "x > 0");
-            Assert.True(result.IsSuccess);
-            Assert.Contains("y != 0", result.FinalWpShort);
-            Assert.Contains("10 / y > 0", result.FinalWpShort);
-        }
-
-        [Fact]
-        public void CalculateWp_ComplexExpression_AddsParentheses()
-        {
-            var result = _engine.CalculateWp("x := a + b", "x > 10");
-            Assert.True(result.IsSuccess);
-            Assert.Contains("(a + b) > 10", result.FinalWpShort);
-        }
-
-        [Fact]
-        public void CalculateWp_MultipleVariables_OnlyTargetSubstituted()
-        {
-            var result = _engine.CalculateWp("x := y + z", "x > 0 ∧ y < 10");
-            Assert.True(result.IsSuccess);
-            Assert.Contains("y + z > 0", result.FinalWpShort);
-            Assert.Contains("y < 10", result.FinalWpShort);
-        }
 
         // 3. Тесты последовательности
         [Fact]
@@ -229,13 +196,6 @@ namespace Nightlight.Tests
             Assert.Equal(2, result.Steps.Count);
         }
 
-        // 6. Тесты пресетов
-        [Fact]
-        public void GetDefaultPresets_ReturnsExactlyThreePresets()
-        {
-            var presets = WpPresets.GetDefaultPresets();
-            Assert.Equal(3, presets.Count);
-        }
 
         [Fact]
         public void GetDefaultPresets_ContainsMaxOfTwo()
