@@ -13,54 +13,72 @@
 
         <!-- ЛЕВАЯ ПАНЕЛЬ -->
         <Border Grid.Column="0" Background="#1E293B">
-            <StackPanel>
-                <TextBlock Text="🌙  НОЧНИК"
-                           Foreground="White"
-                           FontSize="20"
-                           FontWeight="Bold"
-                           Margin="20,25,20,25"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <ListBox ItemsSource="{Binding Operations}"
-                         SelectedItem="{Binding SelectedOperation}"
-                         Background="Transparent"
-                         BorderThickness="0"
-                         Margin="10,0">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="Padding" Value="12,10"/>
-                            <Setter Property="Margin" Value="0,3"/>
-                            <Setter Property="FontSize" Value="14"/>
-                            <Setter Property="Foreground" Value="White"/>
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListBoxItem">
-                                        <Border x:Name="Bd"
-                                                Background="{TemplateBinding Background}"
-                                                CornerRadius="8"
-                                                Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="Bd" Property="Background" Value="#334155"/>
-                                            </Trigger>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="Bd" Property="Background" Value="#4F46E5"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Title}"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="🌙  НОЧНИК"
+                               Foreground="White"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Margin="20,25,20,25"/>
+
+                    <ListBox ItemsSource="{Binding Operations}"
+                             SelectedItem="{Binding SelectedOperation}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Margin="10,0">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="12,10"/>
+                                <Setter Property="Margin" Value="0,3"/>
+                                <Setter Property="FontSize" Value="14"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="Bd"
+                                                    Background="{TemplateBinding Background}"
+                                                    CornerRadius="8"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="#334155"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="#4F46E5"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Title}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+
+                <!-- Кнопка справки -->
+                <Button Grid.Row="1" 
+                        Content="Справка (?)" 
+                        HorizontalAlignment="Left"
+                        Margin="20,10,20,20"
+                        Width="120" Height="35"
+                        Background="#334155" Foreground="White" 
+                        BorderThickness="0" FontWeight="SemiBold"
+                        Click="HelpButton_Click"
+                        ToolTip="Открыть справку по текущей вкладке"/>
+            </Grid>
         </Border>
 
         <!-- ПРАВАЯ ЧАСТЬ -->
@@ -76,7 +94,7 @@
                     <Style TargetType="Grid">
                         <Setter Property="Visibility" Value="Visible"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedOperation.Title}" Value="Конструктор фрагмента (wp)">
+                            <DataTrigger Binding="{Binding SelectedOperation.Title}" Value="Конструктор сценариев (wp)">
                                 <Setter Property="Visibility" Value="Collapsed"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -85,9 +103,9 @@
 
                 <!-- Свечение -->
                 <Ellipse Width="180" Height="180"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center"
-             Opacity="{Binding CurrentBrightness, Converter={StaticResource BrightnessToOpacity}}">
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Opacity="{Binding CurrentBrightness, Converter={StaticResource BrightnessToOpacity}}">
                     <Ellipse.Fill>
                         <RadialGradientBrush>
                             <GradientStop Color="#FFFFC94A" Offset="0"/>
@@ -99,15 +117,15 @@
 
                 <!-- Ядро лампы -->
                 <Ellipse Width="60" Height="60"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center"
-             Fill="{Binding IsNightlightOn, Converter={StaticResource IsOnToGlow}}"/>
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Fill="{Binding IsNightlightOn, Converter={StaticResource IsOnToGlow}}"/>
 
                 <!-- Статус -->
                 <TextBlock HorizontalAlignment="Center"
-               VerticalAlignment="Bottom"
-               FontSize="13"
-               Margin="0,0,0,15">
+                           VerticalAlignment="Bottom"
+                           FontSize="13"
+                           Margin="0,0,0,15">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="Foreground" Value="#94A3B8"/>
@@ -123,6 +141,7 @@
                 </TextBlock>
             </Grid>
 
+            <!-- КАРТОЧКА ОПЕРАЦИИ -->
             <Border Grid.Row="1"
                     Background="#1E293B"
                     CornerRadius="12"
