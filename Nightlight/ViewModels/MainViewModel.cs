@@ -7,9 +7,8 @@ namespace Nightlight
     public partial class MainViewModel : ObservableObject
     {
         private readonly NightlightModel _model;
-
-        public ObservableCollection<object> Operations { get; }
-
+        public ObservableCollection<object> OperationsLr1 { get; }
+        public ObservableCollection<object> OperationsLr2 { get; }
         public FragmentConstructorViewModel FragmentConstructor { get; }
 
         [ObservableProperty]
@@ -27,16 +26,19 @@ namespace Nightlight
 
             FragmentConstructor = new FragmentConstructorViewModel(model);
 
-            Operations = new ObservableCollection<object>();
+            OperationsLr1 = new ObservableCollection<object>
+                {
+                    new AutoToggleViewModel(model),
+                    new SetBrightnessViewModel(model),
+                    new SleepTimerViewModel(model)
+                };
 
-            Operations.Add(new AutoToggleViewModel(model));
-            Operations.Add(new SetBrightnessViewModel(model));
-            Operations.Add(new SleepTimerViewModel(model));
+            OperationsLr2 = new ObservableCollection<object>
+            {
+                FragmentConstructor
+            };
 
-
-            Operations.Add(FragmentConstructor);
-
-            SelectedOperation = Operations[0];
+            SelectedOperation = OperationsLr1[0];
 
             IsNightlightOn = _model.IsOn;
             CurrentBrightness = _model.CurrentBrightness;

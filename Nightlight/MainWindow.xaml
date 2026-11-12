@@ -25,8 +25,12 @@
                                FontSize="20"
                                FontWeight="Bold"
                                Margin="20,25,20,25"/>
-
-                    <ListBox ItemsSource="{Binding Operations}"
+                    <TextBlock Text="ЛР-1: Операции ночника"
+                               Foreground="#94A3B8"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Margin="20,10,20,5"/>        
+                    <ListBox ItemsSource="{Binding OperationsLr1}"
                              SelectedItem="{Binding SelectedOperation}"
                              Background="Transparent"
                              BorderThickness="0"
@@ -45,6 +49,52 @@
                                                     Background="{TemplateBinding Background}"
                                                     CornerRadius="8"
                                                     Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="#334155"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="#4F46E5"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Title}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBlock Text="ЛР-2: Конструктор (wp)"
+                           Foreground="#94A3B8"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Margin="20,10,20,5"/>
+
+                    <ListBox ItemsSource="{Binding OperationsLr2}"
+                            SelectedItem="{Binding SelectedOperation}"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Margin="10,0">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="12,10"/>
+                                <Setter Property="Margin" Value="0,3"/>
+                                <Setter Property="FontSize" Value="14"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
                                                 <ContentPresenter/>
                                             </Border>
                                             <ControlTemplate.Triggers>
