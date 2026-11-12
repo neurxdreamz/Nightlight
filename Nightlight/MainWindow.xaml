@@ -140,17 +140,6 @@
 
             <!-- ВИЗУАЛЬНАЯ ЛАМПА -->
             <Grid Grid.Row="0" Background="#0B1220" Height="220">
-                <Grid.Style>
-                    <Style TargetType="Grid">
-                        <Setter Property="Visibility" Value="Visible"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedOperation.Title}" Value="Конструктор сценариев (wp)">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-
                 <!-- Свечение -->
                 <Ellipse Width="180" Height="180"
                          HorizontalAlignment="Center"

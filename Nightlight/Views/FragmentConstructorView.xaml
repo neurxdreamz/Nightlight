@@ -155,7 +155,7 @@
                         CornerRadius="4"
                         Padding="10"
                         Margin="0,0,0,10"
-                        Visibility="{Binding NightlightActionStatus, Converter={StaticResource BoolToVisibility}}">
+                        Visibility="{Binding NightlightActionStatus, Converter={StaticResource StringNotEmptyToVisibility}}">
                     <TextBlock Text="{Binding NightlightActionStatus}"
                                Foreground="#A7F3D0"
                                FontSize="13"
@@ -167,7 +167,7 @@
                         CornerRadius="4"
                         Padding="10"
                         Margin="0,0,0,10"
-                        Visibility="{Binding ErrorMessage, Converter={StaticResource BoolToVisibility}}">
+                        Visibility="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyToVisibility}}">
                     <TextBlock Text="{Binding ErrorMessage}"
                                Foreground="#FECACA"
                                FontSize="13"
