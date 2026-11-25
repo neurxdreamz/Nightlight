@@ -1,94 +1,88 @@
-﻿
-using System;
-using System.Diagnostics;
+﻿using System;
 
-namespace BuisnessLogic;
-
-public class LoopExecutor
+namespace BuisnessLogic
 {
-    private readonly LoopMode _mode;
-    private readonly int[] _array;
-    private readonly int _threshold;
-
-    public int J { get; private set; }
-    public int Res { get; private set; }
-    public bool IsFinished => !LoopEvaluator.GuardHolds(_mode, _array, J);
-
-    public LoopExecutor(LoopMode mode, int[] array, int threshold)
+    /// <summary>
+    /// Пошаговый интерпретатор цикла: init; while (B) { S }.
+    /// Держит состояние (j, res) и умеет делать один шаг, проверяя Inv до/после и t.
+    /// </summary>
+    public class LoopExecutor
     {
-        ArgumentNullException.ThrowIfNull(array);
-        _mode = mode;
-        _array = (int[])array.Clone();
-        _threshold = threshold;
+        private readonly LoopMode _mode;
+        private readonly int[] _array;
+        private readonly int _threshold;
+        private readonly int _n;
 
-        switch (mode)
+        public int J { get; private set; }
+        public int Res { get; private set; }
+        public bool IsFinished { get; private set; }
+
+        public LoopExecutor(LoopMode mode, int[] array, int threshold)
         {
-            case LoopMode.PrefixSum:
-            case LoopMode.CountGreaterThanT:
-                J = 0;
-                Res = 0;
-                break;
-            case LoopMode.PrefixMax:
-                if (_array.Length == 0)
-                    throw new ArgumentException("Для поиска максимума нужен непустой массив.", nameof(array));
+            _mode = mode;
+            _array = array ?? Array.Empty<int>();
+            _threshold = threshold;
+            _n = _array.Length;
 
-                J = 1;
-                Res = _array[0];
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(mode));
+            // Инициализация согласно Pre/Inv режима
+            switch (mode)
+            {
+                case LoopMode.PrefixSum:
+                case LoopMode.CountGreaterThanT:
+                    J = 0; Res = 0; break;
+                case LoopMode.PrefixMax:
+                    if (_n < 1) { IsFinished = true; J = 0; Res = 0; break; }
+                    J = 1; Res = _array[0]; break;
+            }
         }
 
-    }
+        /// <summary>Инвариант истинен в текущем состоянии (до шага).</summary>
+        public bool InvBefore() =>
+            LoopEvaluator.InvHolds(_mode, _array, J, Res, _threshold);
 
-    public bool InvBefore() => LoopEvaluator.InvHolds(_mode, _array, J, Res, _threshold);
-
-    public LoopExecutionState Step()
-    {
-        bool invariantBefore = InvBefore();
-        int variantBefore = LoopEvaluator.VariantValue(_array.Length, J);
-        int processedIndex = -1;
-        bool invariantAfter = invariantBefore;
-        int variantAfter = variantBefore;
-
-        if (!IsFinished)
+        /// <summary>Один шаг: тело S + j++, с проверкой Inv после и лога t.</summary>
+        public LoopExecutionState Step()
         {
-            Debug.Assert(invariantBefore, "Инвариант перед шагом цикла должен выполняться.");
+            var state = new LoopExecutionState { J = J, Res = Res };
 
-            int value = _array[J];
-            Res = _mode switch
+            if (IsFinished || !LoopEvaluator.GuardHolds(_mode, _array, J))
             {
-                LoopMode.PrefixSum => checked(Res + value),
-                LoopMode.CountGreaterThanT => Res + (value > _threshold ? 1 : 0),
-                LoopMode.PrefixMax => Math.Max(Res, value),
-                _ => throw new InvalidOperationException("Неизвестный режим цикла.")
-            };
-            processedIndex = J;
+                IsFinished = true;
+                state.IsFinished = true;
+                state.J = J; state.Res = Res;
+                state.PostHolds = LoopEvaluator.PostHolds(_mode, _array, J, Res, _threshold);
+                return state;
+            }
+
+            state.InvBeforeHolds = InvBefore();
+
+            int changedIdx = J;
+
+            switch (_mode)
+            {
+                case LoopMode.PrefixSum:
+                    Res += _array[J]; break;
+                case LoopMode.CountGreaterThanT:
+                    if (_array[J] > _threshold) Res++; break;
+                case LoopMode.PrefixMax:
+                    if (_array[J] > Res) Res = _array[J]; break;
+            }
             J++;
 
-            invariantAfter = InvBefore();
-            variantAfter = LoopEvaluator.VariantValue(_array.Length, J);
-            Debug.Assert(invariantAfter, "Инвариант после шага цикла должен выполняться.");
-            Debug.Assert(variantAfter >= 0 && variantAfter < variantBefore, "Вариант должен строго убывать.");
-        }
+            state.J = J;
+            state.Res = Res;
+            state.ChangedIndex = changedIdx;
+            state.InvAfterHolds = LoopEvaluator.InvHolds(_mode, _array, J, Res, _threshold);
+            state.VariantT = LoopEvaluator.VariantValue(_n, J);
 
-        bool finished = IsFinished;
-        return new LoopExecutionState
-        {
-            J = J,
-            Res = Res,
-            ChangedIndex = processedIndex,
-            InvBeforeHolds = invariantBefore,
-            InvAfterHolds = invariantAfter,
-            VariantT = variantAfter,
-            IsFinished = finished,
-            PostHolds = finished && LoopEvaluator.PostHolds(_mode, _array, J, Res, _threshold)
-        };
+            if (!LoopEvaluator.GuardHolds(_mode, _array, J))
+            {
+                IsFinished = true;
+                state.IsFinished = true;
+                state.PostHolds = LoopEvaluator.PostHolds(_mode, _array, J, Res, _threshold);
+            }
+
+            return state;
+        }
     }
 }
-
-18
-
-
-
-
